@@ -11,13 +11,13 @@ public class Md5
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(input.getBytes());
             BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
+            String hashtext = no.toString(Constants.NodeIdBase);
 
             while (hashtext.length() < 32)
                 hashtext = "0" + hashtext;
 
 
-            return hashtext.substring(28,32);
+            return hashtext.substring(32-Constants.NodeIdDigitCount,32);
         }
 
         catch (NoSuchAlgorithmException e)

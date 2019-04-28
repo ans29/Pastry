@@ -6,6 +6,8 @@ public class Pastry
     public static String NodeId;
     private static Server pastryServer;
     private static UserInterface pastryUserInterface;
+    public static LeafSet leafSet;
+    public static RoutingTable routingTable;
 
     public static void main(String[] args)
     {

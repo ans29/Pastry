@@ -6,12 +6,16 @@ public class UserInterface implements Runnable
     private boolean connectionState = false;         //true = connected to Pastry network
     Scanner keyboard = new Scanner(System.in);
     String userInput = "";
-    Client clientOfServer = null;
+
 
 
 // function declarations
 
-    private Client connect(String ipPort)
+    private String getNodeId()                      //done
+    {
+        return Pastry.NodeId;
+    }
+    private Client connect(String ipPort)           //creates a connection object with data-streams : done
     {
         int space = ipPort.indexOf(' ');
         String serverIp = ipPort.substring(0,space);
@@ -21,15 +25,15 @@ public class UserInterface implements Runnable
         return serverToConnect;
     }
 
-    public boolean SendJoinReq(String userInput)
+    public boolean SendJoinReq(String userInput)    //initialise datastructures : REMAINING
     {
-        clientOfServer = connect(userInput.substring(5));
+        Client clientOfServer = connect(userInput.substring(5));
         if (clientOfServer != null)
             connectionState = true;
         return (clientOfServer.connectionState);
     }
 
-    public boolean closeClient()
+    public boolean closeClient()                    //may need extra work, working for now.
     {
         System.out.println("Exiting client part, ctrl+c to stop server");
         return false;
@@ -38,11 +42,13 @@ public class UserInterface implements Runnable
     public boolean put(String p)
     {
         return false;
-    }
+    }  //REMAINING
     public int get(String s)
     {
         return -1;
-    }
+    }         //REMAINING
+
+
 
 
 // Main run
@@ -83,10 +89,5 @@ public class UserInterface implements Runnable
         }while (!userInput.startsWith("exit"));
 
         closeClient();
-    }
-
-    private String getNodeId()
-    {
-        return Pastry.NodeId;
     }
 }
