@@ -26,4 +26,9 @@ public class LeafSet
             }
         }
     }
+
+    public void showLeafset ()
+    {
+        System.out.println("\t\t LEAFSET :: \n\t smaller NodeId : " + smallerId + "\t larger NodeId : " + largerId + "\n");
+    }
 }

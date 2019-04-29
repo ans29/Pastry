@@ -55,9 +55,10 @@ public class RoutingTable  // Matrix of digits x base connections
 
     public void showTable ()
     {
-        System.out.println("\n\t\t Routing Table \n");
+        System.out.println("\n\t\t Routing Table ");
         for (int i = 0; i < rowCount; i++)
         {
+            System.out.print("\t\t");
             for (int j = 0; j < colCount; j++)
                 System.out.print(routingTable[i][j] + " ");
             System.out.println();

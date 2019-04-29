@@ -1,8 +1,11 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class Pastry
 {
+    public static int port;
+    public static InetAddress ip = null;
     public static String NodeId;
     private static Server pastryServer;
     private static UserInterface pastryUserInterface;
@@ -14,15 +17,16 @@ public class Pastry
         System.out.println("creating pastry node");
         if (args.length == 0)
         {
-            System.out.println("ERROR : need port number as argument.. EXITING");
-            return;
+            System.out.print("Enter port no : ");
+            Scanner sc = new Scanner(System.in);
+            port = sc.nextInt();
         }
+        else  port = Integer.parseInt(args[0]);
 
 
-        int port = Integer.parseInt(args[0]);
-
-
-        NodeId = getId (port);
+        NodeId = getOwnId (port);
+        routingTable = new RoutingTable();
+        leafSet = new LeafSet();
 
 
         pastryServer = new Server  (port);
@@ -45,19 +49,15 @@ public class Pastry
 
     }
 
-    private static String getId(int port)
-    {
 
-        InetAddress ip = null;
+    public static String getOwnId(int port)
+    {
         try
         {
             ip = InetAddress.getLocalHost();
         }
         catch (UnknownHostException e)
         {   System.err.println("ERROR : in getting ip address");        }
-
-
-        String op = Md5.getHash(ip.toString()+port);
-        return op;
+        return Helper.getId (ip.toString(), port);
     }
 }

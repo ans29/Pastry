@@ -3,6 +3,7 @@ import java.net.Socket;
 
 public class Client
 {
+    String nodeIdServer;
     boolean connectionState;
     DataInputStream in = null;
     DataOutputStream out = null;

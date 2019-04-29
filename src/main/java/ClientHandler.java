@@ -1,10 +1,12 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler extends Thread
 {
+    String clientNodeId;
     private Socket socket = null;
     private DataInputStream in;
     private DataOutputStream out;
@@ -27,10 +29,14 @@ public class ClientHandler extends Thread
             try
             {
                 rcvdMsg = in.readUTF();
-                System.out.println(rcvdMsg);
-            } catch (IOException e)
+
+                System.out.println("C.HANDLER :: Received message : " + rcvdMsg);
+                if (queryHandler (rcvdMsg) == false)
+                    throw new IOException("C.HANDLER :: Undefined command");
+            }
+            catch (IOException e)
             {
-                System.err.println("CLIENT HANDLER :: closing connection");
+                System.err.println("C.HANDLER :: closing connection");
                 flagToCloseConnection = true;
             }
         }
@@ -39,5 +45,23 @@ public class ClientHandler extends Thread
         {   in.close();     }
         catch (IOException e)
         {   e.printStackTrace();    }
+
+        System.out.println ("C.HANDLER :: Connection terminated");
+    }
+
+    private boolean queryHandler(String rcvdMsg)
+    {
+        if(rcvdMsg.startsWith("Hello"))
+        {
+            String id = rcvdMsg.substring(11,15);
+            String ipPort = rcvdMsg.substring(46,60);
+            Client chandler = Helper.connect(ipPort);
+
+
+            Pastry.leafSet.addNode (id, chandler);
+            Pastry.routingTable.insert (id, chandler);
+            System.out.println("C.HANDLER :: Chandler connection added of Node " + id);
+        }
+        return true;  // change to false afterwards
     }
 }

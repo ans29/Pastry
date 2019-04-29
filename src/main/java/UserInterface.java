@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class UserInterface implements Runnable
@@ -11,27 +12,41 @@ public class UserInterface implements Runnable
 
 // function declarations
 
-    private String getNodeId()                      //done
-    {
-        return Pastry.NodeId;
-    }
-    private Client connect(String ipPort)           //creates a connection object with data-streams : done
-    {
-        int space = ipPort.indexOf(' ');
-        String serverIp = ipPort.substring(0,space);
-        int serverPort = Integer.parseInt(ipPort.substring(space+1));
 
-        Client serverToConnect = new Client(serverIp, serverPort);
-        return serverToConnect;
-    }
-
-    public boolean SendJoinReq(String userInput)    //initialise datastructures : REMAINING
+    public boolean SendJoinReq(String userInput)    //userInput = join 10.42.0.1 4000
     {
-        Client clientOfServer = connect(userInput.substring(5));
-        if (clientOfServer != null)
+    // 1. get NodeId and Client for that Chandler
+        String ipPort = userInput.substring(5);
+        Client chandler = Helper.connect(ipPort);
+        if (chandler != null)
             connectionState = true;
-        return (clientOfServer.connectionState);
+
+        String nodeIdToAdd = Helper.getId(ipPort);
+        System.out.println("UI :: 1/3. Connected to Chandler of " + nodeIdToAdd);
+
+    // 2. UPDATE TABLES
+        Pastry.leafSet.addNode (nodeIdToAdd,chandler);
+        Pastry.routingTable.insert (nodeIdToAdd,chandler);
+        System.out.println("UI :: 2/3. Chandler connection added to Tables");
+
+    // 3. send own NodeId, Chandler's ip and port
+        try
+        {
+            chandler.out.writeUTF("Hello, I'm " + Pastry.NodeId + ", my server's ip and port are :" + Pastry.ip.toString() + " " + Pastry.port);           //send nodeId to ClientHandler
+            chandler.out.flush();
+            System.out.println("UI :: 3/3. sent Hello message to " + nodeIdToAdd);
+        }
+        catch (IOException e)
+        {
+            System.err.println("UI :: Exception in sending nodeId");
+            e.printStackTrace();
+        }
+
+        return (chandler.connectionState);
     }
+
+
+
 
     public boolean closeClient()                    //may need extra work, working for now.
     {
@@ -57,6 +72,8 @@ public class UserInterface implements Runnable
     {
         if (connectionState == false)
         {
+
+            System.out.println("\nUI :: Pastry Node created with NodeId : "+ Pastry.NodeId);
             System.out.print("UI :: Create new pastry network? (0/1) : ");
             if (keyboard.nextInt() == 0)
             {
@@ -68,10 +85,6 @@ public class UserInterface implements Runnable
                 userInput = userInput.concat(ipPortInput);
                 System.out.println(SendJoinReq(userInput));
             }
-            else
-            {
-                System.out.println("\nUI :: Pastry Node created with NodeId : "+ Pastry.NodeId +", ready to accept Key-val pair or hello from another node.");
-            }
         }
 
 
@@ -80,8 +93,9 @@ public class UserInterface implements Runnable
             System.out.print("\nUI :: Enter cmd : ");
             userInput = keyboard.nextLine();
             if(userInput.startsWith("join"))        System.out.println(SendJoinReq(userInput));
-            if(userInput.startsWith("node"))        System.out.println(getNodeId());
-            if(userInput.startsWith("rout"))        System.out.println("Routetable");
+            if(userInput.startsWith("node"))        System.out.println (Pastry.NodeId);
+            if(userInput.startsWith("rout"))        Pastry.routingTable.showTable();
+            if(userInput.startsWith("leaf"))        Pastry.leafSet.showLeafset();
             if(userInput.startsWith("hash"))        System.out.println("Hashtable");
             if(userInput.startsWith("put"))         put(userInput);
             if(userInput.startsWith("get"))         System.out.println (get(userInput));
