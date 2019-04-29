@@ -24,7 +24,7 @@ public class Server implements Runnable
             {
                 System.out.println("SERVER :: LISTENING FOR REQUEST(S)...");
                 socket = server.accept();           // Now Listening for client
-                System.out.println("\nSERVER :: ACCEPTED A REQUEST");
+                System.out.println("SERVER :: ACCEPTED A REQUEST");
 
                 DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));

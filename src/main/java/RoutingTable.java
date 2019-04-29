@@ -1,15 +1,18 @@
 public class RoutingTable  // Matrix of digits x base connections
 {
+    String nodeId;
+    int rowCount, colCount;
     public Client routeTable[][];       // Actual routes, connections
     public String routingTable[][];     // matrix of strings
-    String nodeId;
 
 
     RoutingTable()
     {
+        rowCount = Helper.NodeIdDigitCount;
+        colCount = Helper.NodeIdBase;
         nodeId = Pastry.NodeId;
-        routeTable = new Client [Helper.NodeIdDigitCount] [Helper.NodeIdBase];
-        routingTable = new String [Helper.NodeIdDigitCount] [Helper.NodeIdBase];
+        routeTable = new Client [rowCount] [colCount];
+        routingTable = new String [rowCount] [colCount];
     }
 
 
@@ -22,8 +25,9 @@ public class RoutingTable  // Matrix of digits x base connections
 
         if (targetId == nodeId) return false;
         int lcp = Helper.getLcp (targetId, nodeId);
-
         String initVal = routingTable [lcp][targetId.charAt(lcp)];
+
+
         if ((initVal == null) || (Math.abs (Helper.strCompare (initVal, nodeId)) > Math.abs (Helper.strCompare (targetId, nodeId))))
         // if ((there is no val) OR (if there is, then if old dist > new dist)) then write new val
         {
@@ -47,5 +51,16 @@ public class RoutingTable  // Matrix of digits x base connections
         int lcp = Helper.getLcp (targetId, nodeId);
         routeTable [lcp][targetId.charAt(lcp)] = null;
         routingTable [lcp][targetId.charAt(lcp)] = null;
+    }
+
+    public void showTable ()
+    {
+        System.out.println("\n\t\t Routing Table \n");
+        for (int i = 0; i < rowCount; i++)
+        {
+            for (int j = 0; j < colCount; j++)
+                System.out.print(routingTable[i][j] + " ");
+            System.out.println();
+        }
     }
 }
