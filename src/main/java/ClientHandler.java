@@ -46,22 +46,27 @@ public class ClientHandler extends Thread
         catch (IOException e)
         {   e.printStackTrace();    }
 
-        System.out.println ("C.HANDLER :: Connection terminated");
+        System.out.println ("C.HANDLER :: Connection terminated with node " + clientNodeId);
     }
 
     private boolean queryHandler(String rcvdMsg)
     {
         if(rcvdMsg.startsWith("Hello"))
         {
-            String id = rcvdMsg.substring(11,15);
+        //PING SERVER AND CONNECT TO A NEW CHANDLER OF CLIENT
             int marker = rcvdMsg.indexOf(":");
+            clientNodeId = rcvdMsg.substring(11,15);    //Hello, I'm 4432, my server's ip and port are :10.42.0.1 4000
             String ipPort = rcvdMsg.substring (marker+1);
-            Client chandler = Helper.connect ("127.0.01 4321");
+            Client chandler = Helper.connect (ipPort);
 
+        //INITIALIZE TABLES
+            Pastry.leafSet.addNode (clientNodeId, chandler);
+            Pastry.routingTable.insert (clientNodeId, chandler);
 
-            Pastry.leafSet.addNode (id, chandler);
-            Pastry.routingTable.insert (id, chandler);
-            System.out.println("C.HANDLER :: Chandler connection added of Node " + id);
+        //SAVE SERVER IPPORT ALONG WITH NODEID SO THAT IT CAN BE SHARED WITH OTHERS. #toDo 1
+        //SOCIALIZE AND GET VALUES FROM ITS TABLES  #toDo 2
+
+            System.out.println("C.HANDLER :: Chandler connection added of Node " + clientNodeId);
         }
         return true;  // change to false afterwards
     }
