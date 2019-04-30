@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class Pastry
 {
     public static int port;
-    public static InetAddress ip = null;
-    public static String NodeId;
+    public static String ip = null;
+    protected static String NodeId;
     private static Server pastryServer;
     private static UserInterface pastryUserInterface;
     public static LeafSet leafSet;
@@ -52,12 +52,16 @@ public class Pastry
 
     public static String getOwnId(int port)
     {
+        InetAddress IP = null;
         try
         {
-            ip = InetAddress.getLocalHost();
+            IP = InetAddress.getLocalHost();
         }
         catch (UnknownHostException e)
         {   System.err.println("ERROR : in getting ip address");        }
-        return Helper.getId (ip.toString(), port);
+
+        int slash = IP.toString().indexOf("/");
+        ip = IP.toString().substring(slash+1);
+        return Helper.getId (ip, port);
     }
 }

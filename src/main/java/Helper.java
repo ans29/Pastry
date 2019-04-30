@@ -50,7 +50,7 @@ public class Helper
 
 
 
-    public static int getLcp(String s1, String s2)      //Longest common prefix length, but just for NodeIds
+    public static int getLcpLength(String s1, String s2)      //Longest common prefix length, but just for NodeIds
     {
         int ans = 0;
         for (int i = 0; i< Helper.NodeIdDigitCount; i++)

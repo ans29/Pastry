@@ -24,15 +24,16 @@ public class RoutingTable  // Matrix of digits x base connections
         // case 3 is DOubtTtTt: sloved... it'll be in 0th row, nice.
 
         if (targetId == nodeId) return false;
-        int lcp = Helper.getLcp (targetId, nodeId);
-        String initVal = routingTable [lcp][targetId.charAt(lcp)];
+        int lcp = Helper.getLcpLength(targetId, nodeId);
+        int colVal = targetId.charAt(lcp) - '0';
+        String initVal = routingTable [lcp][colVal];
 
 
         if ((initVal == null) || (Math.abs (Helper.strCompare (initVal, nodeId)) > Math.abs (Helper.strCompare (targetId, nodeId))))
         // if ((there is no val) OR (if there is, then if old dist > new dist)) then write new val
         {
-            routingTable [lcp][targetId.charAt(lcp)] = targetId;
-            routeTable [lcp][targetId.charAt(lcp)] = c;
+            routingTable [lcp][colVal] = targetId;
+            routeTable [lcp][colVal] = c;
             return true;
         }
 
@@ -42,13 +43,13 @@ public class RoutingTable  // Matrix of digits x base connections
     public Client getNode (String targetId)
     {
         if (targetId == nodeId) return null;
-        int lcp = Helper.getLcp (targetId, nodeId);
+        int lcp = Helper.getLcpLength(targetId, nodeId);
         return routeTable [lcp][targetId.charAt(lcp)];
     }
 
     public void delEntry (String targetId)
     {
-        int lcp = Helper.getLcp (targetId, nodeId);
+        int lcp = Helper.getLcpLength(targetId, nodeId);
         routeTable [lcp][targetId.charAt(lcp)] = null;
         routingTable [lcp][targetId.charAt(lcp)] = null;
     }

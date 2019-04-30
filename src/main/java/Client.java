@@ -21,6 +21,7 @@ public class Client
         catch (IOException e)
         {
             System.err.println("CLIENT :: caught exception while creating connection with server");
+            e.printStackTrace();
         }
     }
 

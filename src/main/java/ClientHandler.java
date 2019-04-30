@@ -54,8 +54,9 @@ public class ClientHandler extends Thread
         if(rcvdMsg.startsWith("Hello"))
         {
             String id = rcvdMsg.substring(11,15);
-            String ipPort = rcvdMsg.substring(46,60);
-            Client chandler = Helper.connect(ipPort);
+            int marker = rcvdMsg.indexOf(":");
+            String ipPort = rcvdMsg.substring (marker+1);
+            Client chandler = Helper.connect ("127.0.01 4321");
 
 
             Pastry.leafSet.addNode (id, chandler);
