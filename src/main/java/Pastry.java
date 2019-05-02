@@ -1,5 +1,7 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Pastry
@@ -11,6 +13,7 @@ public class Pastry
     private static UserInterface pastryUserInterface;
     public static LeafSet leafSet;
     public static RoutingTable routingTable;
+    public static HashMap<String, String> idServerIpPortInfo;
 
     public static void main(String[] args)
     {
@@ -23,17 +26,18 @@ public class Pastry
         }
         else  port = Integer.parseInt(args[0]);
 
-
+    //INITIALIZE
         NodeId = getOwnId (port);
         routingTable = new RoutingTable();
         leafSet = new LeafSet();
+        idServerIpPortInfo = new HashMap<String, String>();
 
-
+    //START SERVER
         pastryServer = new Server  (port);
         Thread serverThread = new Thread(pastryServer);
         serverThread.start();
 
-
+    //START UI
         pastryUserInterface = new UserInterface();
         Thread clientThread = new Thread(pastryUserInterface);
         clientThread.start();

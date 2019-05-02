@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class LeafSet
 {
     String smallerId=null, largerId=null;
@@ -29,6 +31,9 @@ public class LeafSet
 
     public void showLeafset ()
     {
-        System.out.println("\t\t LEAFSET :: \n\t smaller NodeId : " + smallerId + "\t larger NodeId : " + largerId + "\n");
+        System.out.println("\t\t LEAFSET :: \n\t smaller NodeId : " + smallerId + "\n\t  larger NodeId : " + largerId + "\n Info about other nodes :");
+        for (Map.Entry<String, String> entry : Pastry.idServerIpPortInfo.entrySet())
+            System.out.println("\t\t" + entry.getKey() + " : " + entry.getValue());
+        System.out.println("\nStrrrrr: "+Pastry.idServerIpPortInfo.toString());
     }
 }

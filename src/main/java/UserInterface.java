@@ -1,4 +1,10 @@
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Scanner;
 
 public class UserInterface implements Runnable
@@ -35,6 +41,32 @@ public class UserInterface implements Runnable
             chandler.out.writeUTF("Hello, I'm " + Pastry.NodeId + ", my server's ip and port are :" + Pastry.ip.toString() + " " + Pastry.port);           //send nodeId to ClientHandler
             chandler.out.flush();
             System.out.println("UI :: 3/3. sent Hello message to " + nodeIdToAdd);
+
+        // READ HashMap of nodeId and server info coming from Chandler of that node.
+            int byteArrSize = chandler.in.readInt();
+            byte[] byteArr = new byte[byteArrSize];
+            chandler.in.read(byteArr);
+
+            // Convert Hash from byteArr
+            ByteArrayInputStream bis = new ByteArrayInputStream(byteArr);
+            ObjectInput in = null;
+            try
+            {
+                in = new ObjectInputStream(bis);
+                HashMap <String,String> rcvdMap = (HashMap <String, String>)in.readObject();
+                System.out.println("UI : MAP before : " + Pastry.idServerIpPortInfo.toString());
+                Pastry.idServerIpPortInfo.putAll (rcvdMap);               //Update entries of Hashmap in Pastry
+                System.out.println("UI : MAP after : " + Pastry.idServerIpPortInfo.toString());
+                //rcvdMap.clear();
+            }
+            catch (IOException e)   {   e.printStackTrace();    }
+            catch (ClassNotFoundException e) {  e.printStackTrace();    }
+            finally
+            {
+                try
+                {   if (in != null)     in.close();     }
+                catch (IOException ex)  { ex.printStackTrace();}
+            }
         }
         catch (IOException e)
         {

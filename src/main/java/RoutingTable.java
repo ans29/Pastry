@@ -29,8 +29,9 @@ public class RoutingTable  // Matrix of digits x base connections
         String initVal = routingTable [lcp][colVal];
 
 
-        if ((initVal == null) || (Math.abs (Helper.strCompare (initVal, nodeId)) > Math.abs (Helper.strCompare (targetId, nodeId))))
-        // if ((there is no val) OR (if there is, then if old dist > new dist)) then write new val
+        if ((initVal == null) || (Math.abs (Helper.strCompare (initVal, nodeId)) < Math.abs (Helper.strCompare (targetId, nodeId))))
+        // if ((there is no val) OR (if there is, then if old dist < new dist)) then write new val,
+        // #IMPORTANT : its "<", because we want to save info of farthest node, faster for jumping.
         {
             routingTable [lcp][colVal] = targetId;
             routeTable [lcp][colVal] = c;
