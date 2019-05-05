@@ -15,6 +15,7 @@ public class Pastry
     public static RoutingTable routingTable;
     public static HashMap <String, String> idServerIpPortInfo;
     public static HashMap <String, Boolean> triedConnecting;
+    private static HashMap <String, String> mainHashTable;
 
     public static void main(String[] args)
     {
@@ -33,6 +34,7 @@ public class Pastry
         leafSet = new LeafSet();
         idServerIpPortInfo = new HashMap<String, String>();
         triedConnecting = new HashMap<String, Boolean>();
+        mainHashTable = new HashMap<String, String>();
 
     //START SERVER
         pastryServer = new Server  (port);
