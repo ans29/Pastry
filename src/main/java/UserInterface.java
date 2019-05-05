@@ -42,7 +42,9 @@ public class UserInterface implements Runnable
             chandler.out.flush();
             System.out.println("UI :: 3/3. sent Hello message to " + nodeIdToAdd);
 
-        // READ HashMap of nodeId and server info coming from Chandler of that node.
+    // 4. READ info of other nodes coming from Chandler
+
+            // READ HashMap of nodeId and server info coming from Chandler of that node.
             int byteArrSize = chandler.in.readInt();
             byte[] byteArr = new byte[byteArrSize];
             chandler.in.read(byteArr);
@@ -54,10 +56,7 @@ public class UserInterface implements Runnable
             {
                 in = new ObjectInputStream(bis);
                 HashMap <String,String> rcvdMap = (HashMap <String, String>)in.readObject();
-                System.out.println("UI : MAP before : " + Pastry.idServerIpPortInfo.toString());
                 Pastry.idServerIpPortInfo.putAll (rcvdMap);               //Update entries of Hashmap in Pastry
-                System.out.println("UI : MAP after : " + Pastry.idServerIpPortInfo.toString());
-                //rcvdMap.clear();
             }
             catch (IOException e)   {   e.printStackTrace();    }
             catch (ClassNotFoundException e) {  e.printStackTrace();    }
@@ -67,6 +66,20 @@ public class UserInterface implements Runnable
                 {   if (in != null)     in.close();     }
                 catch (IOException ex)  { ex.printStackTrace();}
             }
+
+
+    // 5. Connect to all those values who are not already in Routing table
+
+            for(String key : Pastry.idServerIpPortInfo.keySet())
+            {
+                if((Pastry.triedConnecting.get(key) == Boolean.FALSE))
+                    if((Pastry.routingTable.contains(key) == false))
+                {
+                    Pastry.triedConnecting.put (key, Boolean.TRUE) ;
+                    SendJoinReq (Pastry.idServerIpPortInfo.get ("join " + key));
+                }
+            }
+
         }
         catch (IOException e)
         {

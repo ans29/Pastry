@@ -17,11 +17,11 @@ public class RoutingTable  // Matrix of digits x base connections
 
 
 // MAIN FUNCTIONS
-    public boolean insert(String targetId, Client c)    //needs verification... ALL of them
+    public boolean insert(String targetId, Client c)    //needs verification... ALL of them, UPDATE : checked but still not 100% sure
     {
         // case 1: empty Rt,   //case 2: replacement
         // case 1: goes in Rt, //case 2: it is the same as rt, //case 3: LCP = 0
-        // case 3 is DOubtTtTt: sloved... it'll be in 0th row, nice.
+        // case 3 is DOubtTtTt: solved... it'll be in 0th row, nice.
 
         if (targetId == nodeId) return false;
         int lcp = Helper.getLcpLength(targetId, nodeId);
@@ -72,5 +72,20 @@ public class RoutingTable  // Matrix of digits x base connections
                 System.out.print(routingTable[i][j] + " ");
             System.out.println();
         }
+    }
+
+    public boolean contains (String targetId)
+    {
+        if (targetId == nodeId)  return true;
+
+        int lcp = Helper.getLcpLength(targetId, nodeId);
+        int colVal = 0;
+        colVal = targetId.charAt(lcp) - '0';
+
+        String initVal = routingTable [lcp][colVal];
+        if (targetId.compareTo(initVal) == 0)
+            return true;
+
+        return false;
     }
 }

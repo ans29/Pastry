@@ -34,6 +34,5 @@ public class LeafSet
         System.out.println("\t\t LEAFSET :: \n\t smaller NodeId : " + smallerId + "\n\t  larger NodeId : " + largerId + "\n Info about other nodes :");
         for (Map.Entry<String, String> entry : Pastry.idServerIpPortInfo.entrySet())
             System.out.println("\t\t" + entry.getKey() + " : " + entry.getValue());
-        System.out.println("\nStrrrrr: "+Pastry.idServerIpPortInfo.toString());
     }
 }
