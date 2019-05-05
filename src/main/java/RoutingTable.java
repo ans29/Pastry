@@ -25,7 +25,14 @@ public class RoutingTable  // Matrix of digits x base connections
 
         if (targetId == nodeId) return false;
         int lcp = Helper.getLcpLength(targetId, nodeId);
-        int colVal = targetId.charAt(lcp) - '0';
+        int colVal = 0;
+        try
+        {   colVal = targetId.charAt(lcp) - '0';    }
+        catch (StringIndexOutOfBoundsException e)
+        {
+            System.out.println("C.HANDLER :: ERROR : trying to self connect. Aborting.");
+        }
+
         String initVal = routingTable [lcp][colVal];
 
 
