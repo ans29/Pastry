@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -6,6 +7,7 @@ public class Helper
 {
     public static final int NodeIdBase = 4;        //base of NodeIds, 16 for hex, 8 for octal
     public static final int NodeIdDigitCount = 4;   //No of digits in NodeIds
+
 
 
     public static String getId(String ip, int port)
@@ -36,9 +38,25 @@ public class Helper
 
 
 
+    public static void sendPutReqToId(String NodeId, String userInput)
+    {
+        Client chandler = Helper.connect (Pastry.idServerIpPortInfo.get (NodeId));
+        try
+        {
+            chandler.out.writeUTF (userInput);
+            chandler.out.flush();
+          //  return chandler.in.readBoolean();
+        }
+        catch (IOException e)
+        {   e.printStackTrace();    }
+        //return false;
+    }
+
+
+
     public static Client connect(String ipPort)           //creates a connection object with data-streams : done
     {
-        int space = ipPort.indexOf(' ');
+        int space = ipPort.indexOf(" ");
         String serverIp = ipPort.substring(0,space);
         int serverPort = Integer.parseInt(ipPort.substring(space+1));
 
@@ -82,5 +100,23 @@ public class Helper
             return l1 - l2;
         else
             return 0;
+    }
+
+    public static boolean XcloserToA (String x, String a, String b)
+    {
+
+        if (a==null)
+            return false;
+        if (b==null)
+            return true;
+
+        int n = Integer.parseInt(x);
+        int n1 = Integer.parseInt(a);
+        int n2 = Integer.parseInt(b);
+
+        if (Math.abs(n1-n) <= Math.abs(n2-n))
+            return true;
+
+        return false;
     }
 }

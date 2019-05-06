@@ -55,11 +55,20 @@ public class RoutingTable  // Matrix of digits x base connections
         return routeTable [lcp][targetId.charAt(lcp)];
     }
 
+
+    public String getNodeId (String targetId)
+    {
+        if (targetId == nodeId) return null;
+        int lcp = Helper.getLcpLength(targetId, nodeId);
+        return routingTable [lcp][targetId.charAt(lcp)-'0'];
+    }
+
+
     public void delEntry (String targetId)
     {
         int lcp = Helper.getLcpLength(targetId, nodeId);
         routeTable [lcp][targetId.charAt(lcp)] = null;
-        routingTable [lcp][targetId.charAt(lcp)] = null;
+        routingTable [lcp][targetId.charAt(lcp)-'0'] = null;
     }
 
     public void showTable ()

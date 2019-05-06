@@ -27,6 +27,7 @@ public class UserInterface implements Runnable
         if (chandler != null)
             connectionState = true;
 
+
         String nodeIdToAdd = Helper.getId(ipPort);
         System.out.println("UI :: 1/3. Connected to Chandler of " + nodeIdToAdd);
 
@@ -99,14 +100,87 @@ public class UserInterface implements Runnable
         return false;
     }
 
-    public boolean put(String p)
+
+
+    public boolean put(String userInput)
     {
-        return false;
-    }  //REMAINING
-    public int get(String s)
+        int space = userInput.indexOf (" ");
+        userInput = userInput.substring(space+1);
+        space = userInput.indexOf(" ");
+        String keyVal = userInput.substring (0, space );
+        String valVal = userInput.substring (space+1);
+        String keyHash = Helper.getId (keyVal);
+        System.out.println("UI :: Hash of key : " + keyHash + "\tkeyVal : " + keyVal + "\tvalVal : " + valVal);
+
+        if (get(keyHash).compareTo("") == 0 )
+            return false;
+
+    // if dist(key to nodeId) is smallest as comparedto 1. its Rt, 2. its leaf node, then put in its hash, else send put cmd to that one.
+
+        String closerNodeId = Pastry.routingTable.getNodeId(keyHash);   // possibilities : 1.same as nodeId, 2.table=null, 3.closer
+        System.out.println("UI :: closest nodeId in RT of this node is : " + closerNodeId);
+
+        if (Helper.XcloserToA (keyHash, Pastry.NodeId, closerNodeId))
+        //if (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) < Math.abs (Helper.strCompare (closerNodeId, keyHash)))
+        {
+            System.out.println ("\t since closest in RT is not closer we'll check neighbours");
+
+            if ((Pastry.leafSet.smallerId != null) && (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, Pastry.NodeId)))
+            //if (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) > Math.abs (Helper.strCompare (Pastry.leafSet.smallerId, keyHash)))
+            {
+                //send to smaller
+                System.out.println("\t smaller neighbour is closer... sending cmd to put key val pair there");
+                Helper.sendPutReqToId (Pastry.leafSet.smallerId, "put "+ userInput);
+                return true;
+            }
+
+            if ((Pastry.leafSet.largerId != null) && (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, Pastry.NodeId)))
+            //if ((Pastry.leafSet.largerId != null) && (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) > Math.abs (Helper.strCompare (Pastry.leafSet.largerId, keyHash))))
+            {
+                //send to larger
+                System.out.println("\t larger neighbour is closer... sending cmd to put key val pair there");
+                Helper.sendPutReqToId (Pastry.leafSet.largerId, "put "+ userInput);
+                return true;
+            }
+
+            System.out.println("\t both neighbours are not closer... saving pair here");
+            Pastry.mainHashTable.put (keyHash, valVal);
+            return true;
+        }
+
+        // send to closerNodeId
+        if (closerNodeId != null)
+        {
+            System.out.println ("\t since closest in RT is closer, sending cmd to put key val pair there");
+            Helper.sendPutReqToId(closerNodeId, "put "+ userInput);
+            return true;
+        }
+
+        System.out.println ("\t saving pair here");
+        Pastry.mainHashTable.put (keyHash, valVal);
+        return true;
+
+    }
+
+
+
+
+
+    public String get(String s)
     {
-        return -1;
-    }         //REMAINING
+        return " ";
+    }
+
+
+
+    public void printMainHashTable ()
+    {
+        System.out.println("\t\t HASHTABLE STORED IN NODE : " + Pastry.NodeId);
+        for (String key : Pastry.mainHashTable.keySet())
+            System.out.println("\t" + key + " : " + Pastry.mainHashTable.get(key));
+    }
+
+
 
 
 
@@ -141,7 +215,7 @@ public class UserInterface implements Runnable
             if(userInput.startsWith("node"))        System.out.println (Pastry.NodeId);
             if(userInput.startsWith("rout"))        Pastry.routingTable.showTable();
             if(userInput.startsWith("leaf"))        Pastry.leafSet.showLeafset();
-            if(userInput.startsWith("hash"))        System.out.println("Hashtable");
+            if(userInput.startsWith("hash"))        printMainHashTable();
             if(userInput.startsWith("put"))         put(userInput);
             if(userInput.startsWith("get"))         System.out.println (get(userInput));
 

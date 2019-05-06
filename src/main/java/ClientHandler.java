@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
 
 public class ClientHandler extends Thread
 {
@@ -15,7 +14,6 @@ public class ClientHandler extends Thread
         socket = sock;
         in = dis;
         out = dos;
-        //Pastry.idServerIpPortInfo =  new HashMap<>();
     }
 
     @Override
@@ -71,7 +69,7 @@ public class ClientHandler extends Thread
 
 
 
-        //LET IT SOCIALIZE AND SEND VALUES FROM ROUTING TABLES  #toDo 2
+        //LET IT SOCIALIZE AND SEND VALUES FROM ROUTING TABLES
         // terminating condition at client side for socializing, dist from chandler is minimum, as compared to any neighbour, id in routingTable
             //send the hashmap of server details, and routingTable, not routeTable
 
@@ -101,6 +99,65 @@ public class ClientHandler extends Thread
 
             System.out.println("C.HANDLER :: Chandler connection added of Node " + clientNodeId);
         }
+
+        if (rcvdMsg.startsWith("put"))          // put key value list like this
+        {
+            int space = rcvdMsg.indexOf (" ");
+            rcvdMsg = rcvdMsg.substring (space+1);       // key val
+            space = rcvdMsg.indexOf (" ");
+            String keyVal = rcvdMsg.substring (0, space );
+            String valVal = rcvdMsg.substring (space+1);
+            String keyHash = Helper.getId (keyVal);
+            System.out.println("Chandler :: Hash of key : " + keyHash);
+
+            //if (Pastryget(keyHash).compareTo("") == 0 )
+            //    return false;
+
+            // if dist(key to nodeId) is smallest as comparedto 1. its Rt, 2. its leaf node, then put in its hash, else send put cmd to that one.
+
+            String closerNodeId = Pastry.routingTable.getNodeId(keyHash);   // possibilities : 1.same as nodeId, 2.table=null, 3.closer
+            System.out.println("UI :: closest nodeId in RT of this node is : " + closerNodeId);
+
+
+            if (Helper.XcloserToA (keyHash, Pastry.NodeId, closerNodeId))
+            //if (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) < Math.abs (Helper.strCompare (closerNodeId, keyHash)))
+            {
+
+                System.out.println ("\t since closest in RT is not closer we'll check neighbours");
+
+
+                if ((Pastry.leafSet.smallerId != null) && (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, Pastry.NodeId)))
+                //if (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) > Math.abs (Helper.strCompare (Pastry.leafSet.smallerId, keyHash)))
+                {
+                    //send to smaller
+                    System.out.println("\t smaller neighbour is closer... sending cmd to put key val pair there");
+                    Helper.sendPutReqToId (Pastry.leafSet.smallerId, rcvdMsg);
+                }
+                if ((Pastry.leafSet.largerId != null) && (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, Pastry.NodeId)))
+                //if (Math.abs (Helper.strCompare (Pastry.NodeId, keyHash)) > Math.abs (Helper.strCompare (Pastry.leafSet.largerId, keyHash)))
+                {
+                    //send to larger
+                    System.out.println("\t larger neighbour is closer... sending cmd to put key val pair there");
+                    Helper.sendPutReqToId (Pastry.leafSet.largerId, rcvdMsg);
+                }
+
+                System.out.println("\t both neighbours are not closer... saving pair here");
+                Pastry.mainHashTable.put (keyHash, valVal);
+            }
+
+            // send to closerNodeId if not null
+            if (closerNodeId != null)
+            {
+                System.out.println ("\t since closest in RT is closer, sending cmd to put key val pair there");
+                Helper.sendPutReqToId (closerNodeId, rcvdMsg);
+            }
+
+            System.out.println ("\t saving pair here");
+            Pastry.mainHashTable.put (keyHash, valVal);
+        }
+
+        if
+
         return true;  // change to false afterwards
     }
 }

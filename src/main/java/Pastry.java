@@ -15,13 +15,14 @@ public class Pastry
     public static RoutingTable routingTable;
     public static HashMap <String, String> idServerIpPortInfo;
     public static HashMap <String, Boolean> triedConnecting;
-    private static HashMap <String, String> mainHashTable;
+    public static HashMap <String, String> mainHashTable;
 
     public static void main(String[] args)
     {
         System.out.println("creating pastry node");
         if (args.length == 0)
         {
+            System.out.println("IP Address is : " + getOwnIp());
             System.out.print("Enter port no : ");
             Scanner sc = new Scanner(System.in);
             port = sc.nextInt();
@@ -58,7 +59,7 @@ public class Pastry
     }
 
 
-    public static String getOwnId(int port)
+    public static String getOwnIp ()
     {
         InetAddress IP = null;
         try
@@ -70,6 +71,13 @@ public class Pastry
 
         int slash = IP.toString().indexOf("/");
         ip = IP.toString().substring(slash+1);
+        return ip;
+    }
+
+
+    public static String getOwnId(int port)
+    {
+        String ip = getOwnIp();
         return Helper.getId (ip, port);
     }
 }
