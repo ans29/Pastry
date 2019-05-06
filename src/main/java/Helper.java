@@ -52,6 +52,21 @@ public class Helper
         //return false;
     }
 
+    public static void sendGetReqToId(String NodeId, String userInput)
+    {
+        Client chandler = Helper.connect (Pastry.idServerIpPortInfo.get (NodeId));
+        try
+        {
+            chandler.out.writeUTF (userInput);
+            chandler.out.flush();
+            //  return chandler.in.readBoolean();
+        }
+        catch (IOException e)
+        {   e.printStackTrace();    }
+        //return false;
+    }
+
+
 
 
     public static Client connect(String ipPort)           //creates a connection object with data-streams : done

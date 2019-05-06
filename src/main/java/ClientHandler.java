@@ -156,8 +156,66 @@ public class ClientHandler extends Thread
             Pastry.mainHashTable.put (keyHash, valVal);
         }
 
-        if
+        if (rcvdMsg.startsWith("get"))          // get key
+        {
+            int space = rcvdMsg.indexOf (" ");
+            String keyVal = rcvdMsg.substring (space +1 );
+            String keyHash = Helper.getId (keyVal);
 
-        return true;  // change to false afterwards
+            if (Pastry.mainHashTable.containsKey (keyHash))
+            {
+                System.out.println(Pastry.mainHashTable.get (keyHash));
+                return true;
+            }
+
+
+            String closerNodeId = Pastry.routingTable.getNodeId(keyHash);   // possibilities : 1.same as nodeId, 2.table=null, 3.closer
+            System.out.println("UI :: keyHash not present here\n\t looking in RT, closest nodeId in RT of this node is : " + closerNodeId);
+
+
+
+            if ( (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, Pastry.leafSet.largerId)))
+            {
+                System.out.println ("it is closer to smaller side as compared to larger");
+                if (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, closerNodeId))
+                {
+                    System.out.println ("\t get req sent to smaller id in leafset");
+                    Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get " + keyVal);
+                }
+                else if (closerNodeId != null)
+                {
+                    System.out.println ("\t get req sent to node from RT");
+                    Helper.sendGetReqToId (closerNodeId, "get " + keyVal);
+                }
+            }
+            else if (Pastry.leafSet.largerId != null)
+            {
+                System.out.println ("it is closer to larger side as compared to smaller");
+                if (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, closerNodeId))
+                {
+                    System.out.println ("\t get req sent to larger id in leafset");
+                    Helper.sendGetReqToId (Pastry.leafSet.largerId, "get " + keyVal);
+                }
+                else if (closerNodeId != null)
+                {
+                    System.out.println ("\t get req sent to node from RT");
+                    Helper.sendGetReqToId (closerNodeId, "get " + keyVal);
+                }
+            }
+
+            else if (closerNodeId != null)
+            {
+                System.out.println ("\t get req sent to node from RT");
+                Helper.sendGetReqToId (closerNodeId,  rcvdMsg );
+            }
+
+            System.out.println( " NOT FOUND");
+
+
+
+            return true;
+        }
+
+            return true;  // change to false afterwards
     }
 }

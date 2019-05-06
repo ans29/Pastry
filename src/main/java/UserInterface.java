@@ -112,8 +112,8 @@ public class UserInterface implements Runnable
         String keyHash = Helper.getId (keyVal);
         System.out.println("UI :: Hash of key : " + keyHash + "\tkeyVal : " + keyVal + "\tvalVal : " + valVal);
 
-        if (get(keyHash).compareTo("") == 0 )
-            return false;
+    //    if (get(keyHash).compareTo("") == 0 )
+    //        return false;
 
     // if dist(key to nodeId) is smallest as comparedto 1. its Rt, 2. its leaf node, then put in its hash, else send put cmd to that one.
 
@@ -166,9 +166,62 @@ public class UserInterface implements Runnable
 
 
 
-    public String get(String s)
+    public void get(String s)
     {
-        return " ";
+        int space = s.indexOf (" ");
+        String keyVal = s.substring (space +1 );
+        String keyHash = Helper.getId (keyVal);
+
+        if (Pastry.mainHashTable.containsKey (keyHash))
+        {
+            System.out.println(Pastry.mainHashTable.get (keyHash));
+            return;
+        }
+
+
+        String closerNodeId = Pastry.routingTable.getNodeId(keyHash);   // possibilities : 1.same as nodeId, 2.table=null, 3.closer
+        System.out.println("UI :: keyHash not present here\n\t looking in RT, closest nodeId in RT of this node is : " + closerNodeId);
+
+
+
+        if ( (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, Pastry.leafSet.largerId)))
+        {
+            System.out.println ("it is closer to smaller side as compared to larger");
+            if (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, closerNodeId))
+            {
+                System.out.println ("\t get req sent to smaller id in leafset");
+                Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get "+ keyVal);
+            }
+            else if (closerNodeId != null)
+            {
+                System.out.println ("\t get req sent to node from RT");
+                Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+            }
+        }
+        else if (Pastry.leafSet.largerId != null)
+        {
+            System.out.println ("it is closer to larger side as compared to smaller");
+            if (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, closerNodeId))
+            {
+                System.out.println ("\t get req sent to larger id in leafset");
+                Helper.sendGetReqToId (Pastry.leafSet.largerId, "get "+ keyVal);
+            }
+            else if (closerNodeId != null)
+            {
+                System.out.println ("\t get req sent to node from RT");
+                Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+            }
+        }
+
+        else if (closerNodeId != null)
+        {
+            System.out.println ("\t get req sent to node from RT");
+            Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+        }
+
+        System.out.println( " NOT FOUND");
+
+        return;
     }
 
 
@@ -217,7 +270,7 @@ public class UserInterface implements Runnable
             if(userInput.startsWith("leaf"))        Pastry.leafSet.showLeafset();
             if(userInput.startsWith("hash"))        printMainHashTable();
             if(userInput.startsWith("put"))         put(userInput);
-            if(userInput.startsWith("get"))         System.out.println (get(userInput));
+            if(userInput.startsWith("get"))         get(userInput);
 
         }while (!userInput.startsWith("exit"));
 
