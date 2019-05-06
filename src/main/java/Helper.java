@@ -52,18 +52,19 @@ public class Helper
         //return false;
     }
 
-    public static void sendGetReqToId(String NodeId, String userInput)
+    public static String sendGetReqToId(String NodeId, String userInput)
     {
         Client chandler = Helper.connect (Pastry.idServerIpPortInfo.get (NodeId));
         try
         {
             chandler.out.writeUTF (userInput);
             chandler.out.flush();
-            //  return chandler.in.readBoolean();
+            String valToReturn = chandler.in.readUTF();
+            return valToReturn;
         }
         catch (IOException e)
         {   e.printStackTrace();    }
-        //return false;
+        return "NA";
     }
 
 

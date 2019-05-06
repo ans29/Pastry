@@ -164,7 +164,15 @@ public class ClientHandler extends Thread
 
             if (Pastry.mainHashTable.containsKey (keyHash))
             {
-                System.out.println(Pastry.mainHashTable.get (keyHash));
+                System.out.println ("FOUND :: " + Pastry.mainHashTable.get (keyHash));
+                try
+                {
+                    out.writeUTF(Pastry.mainHashTable.get (keyHash));
+                    out.flush();
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
                 return true;
             }
 
@@ -180,12 +188,27 @@ public class ClientHandler extends Thread
                 if (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, closerNodeId))
                 {
                     System.out.println ("\t get req sent to smaller id in leafset");
-                    Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get " + keyVal);
+                    try
+                    {
+                        out.writeUTF(Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get " + keyVal));
+                        out.flush();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
                 }
                 else if (closerNodeId != null)
                 {
                     System.out.println ("\t get req sent to node from RT");
-                    Helper.sendGetReqToId (closerNodeId, "get " + keyVal);
+                    try
+                    {
+                        out.writeUTF(Helper.sendGetReqToId (closerNodeId, "get " + keyVal));
+                        out.flush();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
             else if (Pastry.leafSet.largerId != null)
@@ -194,25 +217,52 @@ public class ClientHandler extends Thread
                 if (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, closerNodeId))
                 {
                     System.out.println ("\t get req sent to larger id in leafset");
-                    Helper.sendGetReqToId (Pastry.leafSet.largerId, "get " + keyVal);
+                    try
+                    {
+                        out.writeUTF(Helper.sendGetReqToId (Pastry.leafSet.largerId, "get " + keyVal));
+                        out.flush();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
                 else if (closerNodeId != null)
                 {
                     System.out.println ("\t get req sent to node from RT");
-                    Helper.sendGetReqToId (closerNodeId, "get " + keyVal);
+                    try
+                    {
+                        out.writeUTF(Helper.sendGetReqToId (closerNodeId, "get " + keyVal));
+                        out.flush();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
                 }
             }
 
             else if (closerNodeId != null)
             {
                 System.out.println ("\t get req sent to node from RT");
-                Helper.sendGetReqToId (closerNodeId,  rcvdMsg );
+                try
+                {
+                    out.writeUTF(Helper.sendGetReqToId (closerNodeId,  rcvdMsg ));
+                    out.flush();
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
 
             System.out.println( " NOT FOUND");
-
-
-
+            try
+            {
+                out.writeUTF("NA");
+                out.flush();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
             return true;
         }
 

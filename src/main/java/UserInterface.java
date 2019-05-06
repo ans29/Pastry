@@ -166,9 +166,12 @@ public class UserInterface implements Runnable
 
 
 
-    public void get(String s)
+    public void get(String s)       // getto 10.1.129.208 4000:KEYYY  //get KEYYY
     {
-        int space = s.indexOf (" ");
+        int space = s.indexOf(" ");
+        //int colon = s.indexOf (":");
+        //String ipPortOfSeeker = s.substring(space+1, colon)
+
         String keyVal = s.substring (space +1 );
         String keyHash = Helper.getId (keyVal);
 
@@ -190,12 +193,12 @@ public class UserInterface implements Runnable
             if (Helper.XcloserToA (keyHash, Pastry.leafSet.smallerId, closerNodeId))
             {
                 System.out.println ("\t get req sent to smaller id in leafset");
-                Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get "+ keyVal);
+                System.out.println (Helper.sendGetReqToId (Pastry.leafSet.smallerId, "get "+ keyVal));
             }
             else if (closerNodeId != null)
             {
                 System.out.println ("\t get req sent to node from RT");
-                Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+                System.out.println (Helper.sendGetReqToId (closerNodeId, "get "+ keyVal));
             }
         }
         else if (Pastry.leafSet.largerId != null)
@@ -204,22 +207,20 @@ public class UserInterface implements Runnable
             if (Helper.XcloserToA (keyHash, Pastry.leafSet.largerId, closerNodeId))
             {
                 System.out.println ("\t get req sent to larger id in leafset");
-                Helper.sendGetReqToId (Pastry.leafSet.largerId, "get "+ keyVal);
+                System.out.println (Helper.sendGetReqToId (Pastry.leafSet.largerId, "get "+ keyVal));
             }
             else if (closerNodeId != null)
             {
                 System.out.println ("\t get req sent to node from RT");
-                Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+                System.out.println (Helper.sendGetReqToId (closerNodeId, "get "+ keyVal));
             }
         }
 
         else if (closerNodeId != null)
         {
             System.out.println ("\t get req sent to node from RT");
-            Helper.sendGetReqToId (closerNodeId, "get "+ keyVal);
+            System.out.println (Helper.sendGetReqToId (closerNodeId, "get "+ keyVal));
         }
-
-        System.out.println( " NOT FOUND");
 
         return;
     }
